@@ -1,0 +1,38 @@
+stages:
+  - test
+  - deploy
+
+.manual_environment_template: &manual_environment
+  when: manual
+  environment:
+    name: "qa"
+  except:
+    - qa
+    - master
+    - prod
+
+.qa_environment_template: &qa_environment
+  only:
+    - qa
+  environment:
+    name: "qa"
+
+.prod_environment_template: &prod_environment
+  only:
+    - prod
+  environment:
+    name: production
+
+.test_template: &job_test
+  stage: test
+  script:
+    - make init
+    - make test
+
+test:manual:
+  <<: *manual_environment
+  <<: *job_test
+
+test:qa:
+  <<: *qa_environment
+  <<: *job_test
